@@ -1,5 +1,5 @@
 # BunnyWorld-Java
-Program simulating bunny population
+Java program simulating bunny population
 
 Final project for UCLA Extension Java 1 course 
 
