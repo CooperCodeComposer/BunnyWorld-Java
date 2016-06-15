@@ -8,10 +8,10 @@ Program simulates a population of male and female bunnies which reproduce every 
 ##Command Line Arguments
 + Program accepts 2 parameters as command line arguments:
     + Initial number of bunnies 
-    + Number of year to run the simulation 
+    + Number of years to run the simulation 
 
-+ To run program from terminal enter: java Simulator 6 20 
-+ (This would give initial colony of 6 bunnies running the sim for 20 years)
++ For example to run program from terminal enter: java Simulator 6 20 
+    + (This would give initial colony of 6 bunnies running the sim for 20 years)
 
 ##Simulation Rules:
 + Initially 5 bunnies of random sex are born
