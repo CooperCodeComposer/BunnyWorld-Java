@@ -1,10 +1,10 @@
 package bunnyworld;
 
-import java.util.Random;
+import java.util.*;
 
 /**
  * Bunny class represents bunnies within the colony
- *
+ * 
  * @author alistaircooper
  */
 public class Bunny implements Comparable<Bunny> {
@@ -13,8 +13,8 @@ public class Bunny implements Comparable<Bunny> {
     private final int LIFE_EXPECTANCY = 6;
 
     protected GENDER gender;
-    protected COLOR color;  // currently unused!
-    protected String name;
+    protected COLOR color;
+    protected String name;    // names are retrieved from txt file on url
     protected int age;
     protected int id;
 
@@ -22,7 +22,7 @@ public class Bunny implements Comparable<Bunny> {
     public static enum GENDER {
         MALE, FEMALE
     }
-    
+
     public static enum COLOR {
         BLACK, BLUE, GRAY, WHITE, BROWN
     }
@@ -32,12 +32,17 @@ public class Bunny implements Comparable<Bunny> {
     // Instance methods 
     // Constructors
     public Bunny() {
-        this.id = lastAsignedId;    // assign incremental unique id
+        this.id = lastAsignedId;           // assign incremental unique id
         lastAsignedId++;
-        age = 0;                    // initialize age at birth
-        name = "John";
-        gender = AssignGender();    // assign random gender at birth
-        
+        age = 0;                           // initialize age at birth
+        name = DownloadNames.NameBunny();  // assigns name using DownloadNames class 
+        gender = AssignGender();           // assign random gender at birth 
+    }
+
+    // Constructor for first generation in colony
+    public Bunny(COLOR color) {
+        this();
+        this.color = color;
     }
 
     public int getAge() {
@@ -72,6 +77,14 @@ public class Bunny implements Comparable<Bunny> {
         this.gender = gender;
     }
 
+    public COLOR getColor() {
+        return color;
+    }
+
+    public void setColor(COLOR color) {
+        this.color = color;
+    }
+
     /**
      * age method increases bunny's age by 1 year
      *
@@ -79,21 +92,52 @@ public class Bunny implements Comparable<Bunny> {
     public void age() {
         age++;  // increment age 1 year
     }
-    
+
     /**
-     * reachedLifeExpectancy method checks if the bunny has reached life expectancy
+     * reachedLifeExpectancy method checks if the bunny has reached life
+     * expectancy
+     *
      * @return boolean
      */
     public boolean reachedLifeExpectancy() {
         return (age >= LIFE_EXPECTANCY);   // true if age greater than 6
     }
-    
+
     /**
      * giveBirth method creates a new bunny
-     * @return Bunny
+     *
+     * @param mother   Bunny object for mother
+     * @return b       Bunny object for baby 
      */
-    public static Bunny giveBirth() {
-        Bunny b = new Bunny();
+    public static Bunny giveBirth(Bunny mother) {
+
+        Bunny b = new Bunny();                     // this is the new baby 
+        COLOR colorOfMother = mother.getColor();   // color of mother
+        COLOR colorOfBaby;                         // color of baby bunny
+
+        switch (colorOfMother) {
+            case BLACK:
+                colorOfBaby = COLOR.BLACK;
+                break;
+            case BLUE:
+                colorOfBaby = COLOR.BLUE;
+                break;
+            case BROWN:
+                colorOfBaby = COLOR.BROWN;
+                break;
+            case GRAY:
+                colorOfBaby = COLOR.GRAY;
+                break;
+            case WHITE:
+                colorOfBaby = COLOR.WHITE;
+                break;
+            default:
+                colorOfBaby = COLOR.BLACK;
+        }
+
+        // assign baby nunny same color as mother
+        b.setColor(colorOfBaby);
+
         return b;
     }
 
@@ -112,7 +156,7 @@ public class Bunny implements Comparable<Bunny> {
     public String toString() {
         return "[ID: " + id + "] " + gender + " (AGE: " + age + ")";
     }
-    
+
     // Static Methods
     
     /**
@@ -123,7 +167,7 @@ public class Bunny implements Comparable<Bunny> {
     public static GENDER AssignGender() {
         Random rand = new Random();
         int n = rand.nextInt(2) + 1;   // randomly generates either 1 or 2
-        
+
         if (n == 1) {
             return GENDER.MALE;
         } else {

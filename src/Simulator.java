@@ -1,6 +1,6 @@
 //*************************-=-=-=-=-=-=-=-=-=-=-=-=-**************************// 
 //********************<           BUNNY WORLD             >*******************//
-//*************************-=-=-=-=  V 1.0  -=-=-==-**************************//
+//*************************-=-=-=-=  V 1.1  -=-=-==-**************************//
 //**************                     AUTHOR                     **************//
 //---------------<_>------->>>   ALISTAIR COOPER   <<<-------<_>--------------//
 //*****************<_>         CREATED: 06/09/2016          <_>***************//
@@ -17,34 +17,41 @@ import bunnyworld.*;
  * @author alistaircooper
  */
 public class Simulator {
-
-    /**
-     * main method
-     */
+ 
     // Constants
     private static final int BREEDING_AGE = 2;
-    private static final int MAX_SIM_YEARS = 20;
-    private static final int INITIAL_BUNNIES = 5;
     private static final int FAMINE_THRESHOLD = 100;
-
+    
+    /**
+     * main method
+     * @param args   parameters from the command line
+     */
     public static void main(String[] args) {
-
-        // Instance variables
-        Set<Bunny> bunnies = new TreeSet<>();
-
-        // If there's 1 male and 1 female 2 years or older all females 2 years older give birth 
         
-        // initialize colony
-        for (int i = 0; i < INITIAL_BUNNIES; i++) {
-            bunnies.add(new Bunny());
+        // call method to validate command line arguments
+        if (!ValidateArguments(args)) {
+            return;  // exit program
         }
-
-        // increment year
-        int year = 0;
-
+        
+   
+        // Constants set by command line arguments
+        final int INITIAL_BUNNIES = Integer.parseInt(args[0]);
+        final int MAX_SIM_YEARS = Integer.parseInt(args[1]);
+        
+        // Instance variables
+        Set<Bunny> bunnies = new TreeSet<>();   // set representing bunny colony
+        int year = 0;                           // start year number
+          
+        // download names from url 
+        DownloadNames.DownloadNamesArray();
+        
+        // populate bunnies Set with first generation
+        bunnies = StartColony(INITIAL_BUNNIES); 
+        
         // print initial birth report 
         printAnnualReport(bunnies, year);
-
+        
+        // main while loop for each year 
         while ( (year < MAX_SIM_YEARS) && (bunnies.size() > 0)) {
 
             year++;  // increment year 
@@ -53,20 +60,91 @@ public class Simulator {
             System.out.println("* BIRTHS + DEATHS");
             System.out.println("* YEAR: " + year);
 
-            age(bunnies);
-            dieOfOldAge(bunnies);
-            procreate(bunnies);
-            checkForFamine(bunnies);
-            printAnnualReport(bunnies, year);
+            age(bunnies);                      // age bunnies 1 year
+            dieOfOldAge(bunnies);              // check for bunnies past life expectancy
+            procreate(bunnies);                // give birth to new bunnies
+            checkForFamine(bunnies);           // check population size for potential famine
+            printAnnualReport(bunnies, year);  // print annual report
 
         }
 
     }
+    
+    /**
+     * ValidateArguments method validates if user has entered 2 arguments in the 
+     *                   command line
+     * @param args  array of parameters from the command line
+     * @return Boolean
+     */
+    public static Boolean ValidateArguments(String[] args) {
+        
+        if (args.length != 2) {
+            System.out.println("Need to enter 2 arguments, initial number of bunnies "
+                            + "and number of years to run simulation");
+            return false;
+        } else {
+            return true;
+        }
+    }
+    
+    /**
+     * StartColony method populate bunnies Set with first generation of bunnies
+     *
+     * @param initialBunnies    number of initial bunnies in colony
+     * @return bunnies          the Set of bunnies in colony
+     */
+    public static Set<Bunny> StartColony(int initialBunnies) {
+        
+        // Instance variables
+        Set<Bunny> bunnies = new TreeSet<>();
+        
+        // initialize colony
+        for (int i = 0; i < initialBunnies; i++) {
+            
+            Bunny.COLOR color = AssignColor();   // Generate random color 
+            
+            Bunny baby = new Bunny(color);       // instantiate bunny
+            
+            bunnies.add(baby);
+            
+            System.out.println("First generation " + baby.getGender() + " bunny called "
+                              + baby.getName() + " [ID " + baby.getId() + "] " 
+                              + baby.getColor() + " color is born\n" );
+        }
+        return bunnies;
+    }
+    
+    /**
+     * AssignColor method to randomly assign color to first generation of bunnies
+     *
+     * @return COLOR
+     */
+    public static Bunny.COLOR AssignColor() {
+        Random rand = new Random();
+        int n = rand.nextInt(5) + 1;  // randomly generates number between 1 and 5
+        Bunny.COLOR color;            // color to return
+        
+        switch (n) {
+            case 1: color = Bunny.COLOR.BLACK;
+                    break;
+            case 2: color = Bunny.COLOR.BLUE;
+                    break;
+            case 3: color = Bunny.COLOR.BROWN;
+                    break;
+            case 4: color = Bunny.COLOR.GRAY;
+                    break;
+            case 5: color = Bunny.COLOR.WHITE;
+                    break;
+            default: color = Bunny.COLOR.BLACK;
+                    break;
+        }
+        return color;
+    }
 
     /**
-     * age method checks if the bunny is 6 years old
+     * age method adds 1 year to eat bunny's age 
      *
-     * @param bunnies
+     * @param bunnies   Set containing bunnies in colony
      */
     public static void age(Set<Bunny> bunnies) {
 
@@ -80,7 +158,7 @@ public class Simulator {
     /**
      * dieOfOldAge method kills at age 6
      *
-     * @param bunnies
+     * @param bunnies   Set containing bunnies in colony
      */
     public static void dieOfOldAge(Set<Bunny> bunnies) {
 
@@ -89,8 +167,8 @@ public class Simulator {
             Bunny b = iter.next();
 
             if (b.reachedLifeExpectancy()) {
-                System.out.println("* Sadly " + b.getGender() + " bunny [ID " 
-                        + b.getId() + "] " + "has passed away");
+                System.out.println("* Sadly " + b.getName() + " " + b.getGender() 
+                        + " bunny [ID " + b.getId() + "] " + "has passed away");
                 iter.remove();
             }
         }
@@ -99,13 +177,14 @@ public class Simulator {
     /**
      * procreate method checks for breeding couples and adds baby bunnies to set
      *
-     * @param bunnies
+     * @param bunnies   Set containing bunnies in colony
      */
     public static void procreate(Set<Bunny> bunnies) {
 
         Set<Bunny> babyBunnies = new TreeSet<>();  // Set to hold baby bunnies
-
-        boolean spermSource = false; // flag for male bunny 2 or older in set
+        
+        // flag for if there's 1 male bunny 2 or older in set
+        boolean spermSource = false; 
 
         Iterator<Bunny> iter = bunnies.iterator();
 
@@ -129,13 +208,15 @@ public class Simulator {
 
                 if ((b.getGender() == Bunny.GENDER.FEMALE)
                         && (b.getAge() >= BREEDING_AGE)) {
-
-                    Bunny babyBunny = Bunny.giveBirth();
+                    
+                    // pass in the mother as parameter to giveBirth method
+                    Bunny babyBunny = Bunny.giveBirth(b);
 
                     babyBunnies.add(babyBunny);  // FIX ME pass in mother
 
-                    System.out.println("* A baby bunny is born! [ID "
-                            + babyBunny.getId() + "]");
+                    System.out.println("* A baby bunny called " + babyBunny.getName() 
+                            + " is born! \n* [ID " + babyBunny.getId() + "] " 
+                            + babyBunny.getColor() + " color" );
                 }
             }
         }
@@ -147,7 +228,7 @@ public class Simulator {
     /**
      * checkForFamine method that kills 50% of bunnies if pop exceeds 100
      *
-     * @param bunnies
+     * @param bunnies   Set containing bunnies in colony
      */
     public static void checkForFamine(Set<Bunny> bunnies) {
 
@@ -181,8 +262,6 @@ public class Simulator {
 
                 }
 
-            //    System.out.println("TEST: Current id array " + bunnyIdArray);
-
                 // get total size of id array 
                 int sizeOfIdArray = bunnyIdArray.size();
 
@@ -211,8 +290,8 @@ public class Simulator {
     /**
      * printAnnualReport method that prints a report for the bunny colony
      *
-     * @param bunnies
-     * @param year is the current year
+     * @param bunnies   Set containing bunnies in colony
+     * @param year      is the current year
      */
     public static void printAnnualReport(Set<Bunny> bunnies, int year) {
 
@@ -261,6 +340,7 @@ public class Simulator {
         }
 
         System.out.println("************************************************");
+        System.out.println("*");
         System.out.println("* A N N U A L  R E P O R T");
         System.out.println("* YEAR: " + year);
         System.out.println("*");
@@ -274,20 +354,18 @@ public class Simulator {
         System.out.println("* BUNNIES AGE 4: " + bunniesAge4);
         System.out.println("* BUNNIES AGE 5: " + bunniesAge5);
         System.out.println("");
-
     }
 
     /**
      * print method only use in testing to print bunnies Set
      *
-     * @param bunnies
+     * @param bunnies   Set containing bunnies in colony
      */
     public static void print(Set<Bunny> bunnies) {
         System.out.println("Colony:");
         for (Bunny bunny : bunnies) {
             System.out.println(bunny);
         }
-
     }
 
 }
