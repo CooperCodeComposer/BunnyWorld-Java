@@ -12,11 +12,11 @@ public class Bunny implements Comparable<Bunny> {
     // Instance variables
     private final int LIFE_EXPECTANCY = 6;
 
-    protected GENDER gender;
-    protected COLOR color;
-    protected String name;    // names are retrieved from txt file on url
-    protected int age;
-    protected int id;
+    private GENDER gender;
+    private COLOR color;
+    private String name;    // names are retrieved from txt file on url
+    private int age;
+    private int id;
 
     // Class variables
     public static enum GENDER {
@@ -100,7 +100,7 @@ public class Bunny implements Comparable<Bunny> {
      * @return boolean
      */
     public boolean reachedLifeExpectancy() {
-        return (age >= LIFE_EXPECTANCY);   // true if age greater than 6
+        return (age >= LIFE_EXPECTANCY);   // true if age greater than life expectancy
     }
 
     /**
@@ -160,7 +160,7 @@ public class Bunny implements Comparable<Bunny> {
     // Static Methods
     
     /**
-     * AssignGender method randomly assigns gender when initializing a bunny
+     * AssignGender method randomly assigns gender for first generation bunnies
      *
      * @return GENDER
      */

@@ -1,6 +1,6 @@
 //*************************-=-=-=-=-=-=-=-=-=-=-=-=-**************************// 
 //********************<           BUNNY WORLD             >*******************//
-//*************************-=-=-=-=  V 1.1  -=-=-==-**************************//
+//*************************-=-=-=-=  V 1.2  -=-=-==-**************************//
 //**************                     AUTHOR                     **************//
 //---------------<_>------->>>   ALISTAIR COOPER   <<<-------<_>--------------//
 //*****************<_>         CREATED: 06/09/2016          <_>***************//
@@ -12,15 +12,18 @@ import java.util.*;
 import bunnyworld.*;
 
 /**
- * Simulator is the driver class to simulate the colony
+ * simulator is the driver class to simulate the colony
  *
  * @author alistaircooper
  */
-public class Simulator {
+public class simulator {
  
-    // Constants
-    private static final int BREEDING_AGE = 2;
-    private static final int FAMINE_THRESHOLD = 100;
+    // Static variables 
+    private static final int BREEDING_AGE = 2;       // age at which bunnies can breed
+    private static final int FAMINE_THRESHOLD = 100; // threshold at which famine occurs
+    
+    private static int initialBunnies;  // initial number of bunnies in colony
+    private static int maxSimYears;     // maximum year the simulation will run   
     
     /**
      * main method
@@ -33,10 +36,9 @@ public class Simulator {
             return;  // exit program
         }
         
-   
-        // Constants set by command line arguments
-        final int INITIAL_BUNNIES = Integer.parseInt(args[0]);
-        final int MAX_SIM_YEARS = Integer.parseInt(args[1]);
+        // Assign values from command line arguments
+        initialBunnies = Integer.parseInt(args[0]);
+        maxSimYears = Integer.parseInt(args[1]);
         
         // Instance variables
         Set<Bunny> bunnies = new TreeSet<>();   // set representing bunny colony
@@ -46,13 +48,13 @@ public class Simulator {
         DownloadNames.DownloadNamesArray();
         
         // populate bunnies Set with first generation
-        bunnies = StartColony(INITIAL_BUNNIES); 
+        bunnies = StartColony(); 
         
         // print initial birth report 
         printAnnualReport(bunnies, year);
         
         // main while loop for each year 
-        while ( (year < MAX_SIM_YEARS) && (bunnies.size() > 0)) {
+        while ( (year < maxSimYears) && (bunnies.size() > 0)) {
 
             year++;  // increment year 
 
@@ -90,10 +92,9 @@ public class Simulator {
     /**
      * StartColony method populate bunnies Set with first generation of bunnies
      *
-     * @param initialBunnies    number of initial bunnies in colony
      * @return bunnies          the Set of bunnies in colony
      */
-    public static Set<Bunny> StartColony(int initialBunnies) {
+    public static Set<Bunny> StartColony() {
         
         // Instance variables
         Set<Bunny> bunnies = new TreeSet<>();
@@ -156,7 +157,7 @@ public class Simulator {
     }
 
     /**
-     * dieOfOldAge method kills at age 6
+     * dieOfOldAge method kills bunny when reaches life expectancy 
      *
      * @param bunnies   Set containing bunnies in colony
      */
